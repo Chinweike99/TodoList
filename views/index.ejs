@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Todo_List</title>
+        <link rel="stylesheet" href="/styles/styles.css">
+      </head>
+
+      <body>
+        <main>
+          
+          <div class="mainDiv">
+            <h3><%= listName %></h3>
+            <form class="form1" action="/family" method="post">
+              <input type="submit" name="user" value="My ToDoList" id="tab">
+              <input type="submit" name="add" value="Add Family member" id="tab">
+            </form>
+            <!-- <button type="submit"><h3>My ToDo List</h3></button> -->
+            
+            <div class="textBox">
+              <% for(let task of listTask) {%>
+              <div class="taskbox">
+                  <form class="task" action="/delete" method="post">
+                    <input type="checkbox" onchange="this.form.submit()" name="deleteItemId" value="">
+                  </form>
+    
+                  <p>
+                    <%= task.task %>
+                  </p>
+    
+                  <form action="/edit" method="post">
+                    <input type="hidden" name="updatedId">
+                    <input type="text" name="updateText" autofocus="true" hidden="true">
+                  </form>
+                  <button>✏️</button>
+              </div>
+              <% } %>
+              <form class="form2" action="/addTask" method="post">
+                <input type="text" name="taskName" placeholder="New task" autofocus="true" required>
+                <button type="submit" class="add" value=<%= listName %>>+</button>
+                <!-- <button type="submit">submit</button> -->
+             </form>
+              
+            </div>
+            
+        </div>
+        </main>
+      </body>
+
+</html>
