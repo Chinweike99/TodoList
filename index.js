@@ -23,16 +23,50 @@ const tasks = [
 ];
 
 const familyMembers = [
-    { id: 1, name: "Chinweike"}
+    { id: 1, name: "Chinweike"},
+    { id: 2, name: "Innocent"}
 ]
 
 let currentMember = 1;
 
-app.get('/', (req, res) =>{
-    res.render('index.ejs',{
-        listName: "Today",
-        listTask: tasks
-    })
+// app.get('/', (req, res) =>{
+//     res.render('index.ejs',{
+//         listName: "Today",
+//         listTask: tasks,
+//         familyMembers: familyMembers
+//     })
+// });
+
+app.get('/', async (req, res)=>{
+    try{
+        const taskResult = await db.query("SELECT * FROM tasks;");
+        const tasks = taskResult.rows;
+
+        const familResult = await db.query("SELECT * FROM family;");
+        const familyMembers = familResult.rows;
+
+        res.render("index.ejs", {
+            listName: "TODAY",
+            // tasks: tasks,
+            listTask: tasks,
+            familyMembers: familyMembers
+        });
+    } catch(err){
+        console.error(err);
+        res.send("Error" + err)
+    }
+});
+
+app.post("/addTask", async (req, res) =>{
+    // const item = req.body.taskName;
+    const { memberId, taskName } = req.body;
+    try{
+        await db.query("INSERT INTO tasks (task, member_Id) VALUES ($1, $2)", [taskName, memberId]);
+        res.redirect('/');
+    }catch(err){
+        console.error(err);
+        res.status(500).send("Error");
+    }
 });
 
 app.post('/family', (req, res)=>{
@@ -43,20 +77,27 @@ app.post('/family', (req, res)=>{
     } 
 })
 
-app.post("/addTask", (req, res) =>{
-    const item = req.body.taskName;
-    tasks.push({ task: item });
-    res.redirect('/');
-});
-
 app.post('/new', async (req, res)=>{
     const name = req.body.name;
-    const addMember = await db.query(
-        "INSERT INTO family (name) VALUES($1) RETURNING *;", [name]
-    );
-    const id = addMember.rows[0].id;
-    currentMember = id;
-    res.redirect('/');
+    try {
+        const exists = await db.query(
+            "SELECT * FROM family WHERE name = $1", [name]
+        );
+        if (exists.rows.length > 0){
+            res.render('new.ejs', {error: "Family member exists"});
+            return;
+        }
+        const addMember = await db.query(
+            "INSERT INTO family (name) VALUES($1) RETURNING *;", [name]
+        );
+     
+        // const id = addMember.rows[0].id;
+        // currentMember = id;
+        res.redirect('/');
+    } catch(error){
+        res.render('new.ejs', {error: "An error occured"});
+        console.error("Error adding family member", error);
+    }
 })
 
 app.listen(port, ()=>{

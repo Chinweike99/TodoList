@@ -11,12 +11,15 @@
         <main>
           <div>
             <p>Add family member</p>
-            <form class="form1" action="/new">
-                <input type="text" class="family" placeholder="Name" name="name">
-                
+            <% if(typeof error !== 'undefined') {%>
+              <p style="color: red;"><%= error %></p>
+            <% } %>
+            <form class="form1" action="/new" method="post">
+                <input type="text" class="family" placeholder="Name" name="name" required>
+                <button type="submit" class="add">+</button>
                 <!-- <button type="submit">submit</button> -->
             </form>
-            <button type="submit" class="add">+</button>
+            
         </div>
         </main>
       </body>

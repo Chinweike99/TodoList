@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html>
     <head>
         <meta charset="UTF-8">
@@ -11,9 +12,15 @@
         <main>
           
           <div class="mainDiv">
+            <% if (typeof error !== 'undefined') {%>
+              <p style="color: red;"><%= error %></p>
+            <% } %>
             <h3><%= listName %></h3>
             <form class="form1" action="/family" method="post">
-              <input type="submit" name="user" value="My ToDoList" id="tab">
+              <% familyMembers.forEach(function(member) {%>
+              <input type="submit" for="<%= member.id %>" name="user" value="<%= member.name %>" id="<%= member.id %>">
+              <!-- <label for="<%= member.id %>"><%= member.name %></label> -->
+              <% }) %>
               <input type="submit" name="add" value="Add Family member" id="tab">
             </form>
             <!-- <button type="submit"><h3>My ToDo List</h3></button> -->
