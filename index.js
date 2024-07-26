@@ -8,7 +8,7 @@ const port = 3000;
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(express.static('public'));
 
-const db = pg.Client({
+const db = new pg.Client({
   user: "postgres",
   host: "localhost",
   database: "TodoList",
