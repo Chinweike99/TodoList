@@ -29,24 +29,23 @@ let currentMember = 1;
 
 app.get('/', async (req, res)=>{
     try{
-        // const taskResult = await db.query("SELECT * FROM tasks;");
-        // const tasks = taskResult.rows;
+        const taskResult = await db.query("SELECT * FROM tasks;");
+        const tasks = taskResult.rows;
 
-        // const familResult = await db.query("SELECT * FROM family;");
-        // const familyMembers = familResult.rows;
-        const familyMembers = await db.query("SELECT * FROM family");
-        let tasks = [];
-        if (req.query.memberId) {
-            const taskResult = await db.query("SELECT * FROM tasks WHERE member_id = $1", [req.query.memberId]);
-            tasks = taskResult.rows;
-        }
-
+        const familResult = await db.query("SELECT * FROM family;");
+        const familyMembers = familResult.rows;
+        // const familyMembers = await db.query("SELECT * FROM family");
+        // let tasks = [];
+        // if (req.query.memberId) {
+        //     const taskResult = await db.query("SELECT * FROM tasks WHERE member_id = $1", [req.query.memberId]);
+        //     tasks = taskResult.rows;
+        // }
 
         res.render("index.ejs", {
             listName: "TODAY",
             // tasks: tasks,
             listTask: tasks,
-            familyMembers: familyMembers.rows,
+            familyMembers: familyMembers,
             currentMemberId: req.query.memberId || null
         });
     } catch(err){
@@ -56,7 +55,15 @@ app.get('/', async (req, res)=>{
 });
 
 app.post("/addTask", async (req, res) =>{
-    const { memberId, taskName } = req.body.taskName;
+    // const task = req.body.taskName;
+    // try{
+    //     await db.query("INSERT INTO tasks (task) VALUES ($1)", [task]);
+    //     res.redirect("/")
+    // }catch(err){
+    //     console.log(err)
+    // }
+
+    const { memberId, taskName } = req.body;
     try{
         await db.query("INSERT INTO tasks (task, member_Id) VALUES ($1, $2)", [taskName, memberId]);
         res.redirect('/?memberId=' + memberId);
