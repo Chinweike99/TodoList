@@ -17,16 +17,6 @@ const db = new pg.Client({
 });
 db.connect();
 
-const tasks = [
-    { id: 1, task: "Study"},
-    { id: 2, task: "Work"}
-];
-
-const familyMembers = [
-    { id: 1, name: "Chinweike"},
-    { id: 2, name: "Innocent"}
-]
-
 let currentMember = 1;
 
 // app.get('/', (req, res) =>{
@@ -39,33 +29,40 @@ let currentMember = 1;
 
 app.get('/', async (req, res)=>{
     try{
-        const taskResult = await db.query("SELECT * FROM tasks;");
-        const tasks = taskResult.rows;
+        // const taskResult = await db.query("SELECT * FROM tasks;");
+        // const tasks = taskResult.rows;
 
-        const familResult = await db.query("SELECT * FROM family;");
-        const familyMembers = familResult.rows;
+        // const familResult = await db.query("SELECT * FROM family;");
+        // const familyMembers = familResult.rows;
+        const familyMembers = await db.query("SELECT * FROM family");
+        let tasks = [];
+        if (req.query.memberId) {
+            const taskResult = await db.query("SELECT * FROM tasks WHERE member_id = $1", [req.query.memberId]);
+            tasks = taskResult.rows;
+        }
+
 
         res.render("index.ejs", {
             listName: "TODAY",
             // tasks: tasks,
             listTask: tasks,
-            familyMembers: familyMembers
+            familyMembers: familyMembers.rows,
+            currentMemberId: req.query.memberId || null
         });
     } catch(err){
         console.error(err);
-        res.send("Error" + err)
+        res.status(500).send("Error" + err)
     }
 });
 
 app.post("/addTask", async (req, res) =>{
-    // const item = req.body.taskName;
-    const { memberId, taskName } = req.body;
+    const { memberId, taskName } = req.body.taskName;
     try{
         await db.query("INSERT INTO tasks (task, member_Id) VALUES ($1, $2)", [taskName, memberId]);
-        res.redirect('/');
+        res.redirect('/?memberId=' + memberId);
     }catch(err){
         console.error(err);
-        res.status(500).send("Error");
+        res.status(500).send("Server Error 2 has occurred, fix it");
     }
 });
 
@@ -87,7 +84,7 @@ app.post('/new', async (req, res)=>{
             res.render('new.ejs', {error: "Family member exists"});
             return;
         }
-        const addMember = await db.query(
+        await db.query(
             "INSERT INTO family (name) VALUES($1) RETURNING *;", [name]
         );
      
@@ -100,6 +97,33 @@ app.post('/new', async (req, res)=>{
     }
 })
 
+
+app.post("/edit", async (req, res) => {
+    // const task = req.body.updateText;
+    // const id = req.body.updatedId;
+    const { updatedId, updateText, memberId } = req.body;
+
+    try {
+        await db.query("UPDATE tasks SET task = $1 WHERE id = $2", [updateText, updatedId]);
+        res.redirect("/?memberId=" + memberId);
+    }catch(error){
+        console.error("Error Ocurred", error);
+        res.status(500).send("Server Error1");
+    }
+});
+
+app.post("/delete", async(req, res) => {
+    // const id = req.body.deleteItemId;
+    const { deleteItemId, memberId } = req.body;
+    try {
+        await db.query("DELETE FROM tasks WHERE id = $1", [deleteItemId]);
+        res.redirect('/?memberId=' + memberId);
+    }catch(err){
+        console.log(err);
+        res.status(500).send("Server Error Occured");
+    }
+});
+
 app.listen(port, ()=>{
-    console.log(`Listening on port ${port}`)
+    console.log(`Listening on port http://localhost:${port}`)
 });

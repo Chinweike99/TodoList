@@ -60,6 +60,32 @@ main .mainDiv{
     /* height: 30px; */
     font-size: 18px;
 }
+.editInput{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: -2px;
+}
+.updateInput{
+    align-items: center;
+    border: none;
+    outline: none;
+    font-size: 18px;
+}
+
+.editBtn{
+    border: none;
+    outline: none;
+    font-size: 20px;
+    background: white;
+}
+.editBtn:hover{
+    background: none;
+    border: 1px solid #2077a6;
+    padding: 2px;
+    border-radius: 3px;
+}
+
 .form2{
     width: 80%;
     height: 30px;

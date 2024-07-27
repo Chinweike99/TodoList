@@ -18,41 +18,59 @@
             <h3><%= listName %></h3>
             <form class="form1" action="/family" method="post">
               <% familyMembers.forEach(function(member) {%>
-              <input type="submit" for="<%= member.id %>" name="user" value="<%= member.name %>" id="<%= member.id %>">
+              <!-- <input type="submit" name="memberId" for="<%= member.id %>"  value="<%= member.name %>" id="<%= member.id %>"> -->
+              <input type="submit" name="memberId"  value="<%= member.name %>" id="<%= member.id %>">
               <!-- <label for="<%= member.id %>"><%= member.name %></label> -->
               <% }) %>
-              <input type="submit" name="add" value="Add Family member" id="tab">
+              <input type="submit" name="add" formaction="/family" value="Add Family member" id="tab">
             </form>
             <!-- <button type="submit"><h3>My ToDo List</h3></button> -->
             
             <div class="textBox">
-              <% for(let task of listTask) {%>
+              <% listTask.forEach(function(task) { %>
               <div class="taskbox">
                   <form class="task" action="/delete" method="post">
-                    <input type="checkbox" onchange="this.form.submit()" name="deleteItemId" value="">
+                    <input type="hidden" name="memberId" value="<%= currentMemberId %>">
+                    <input type="checkbox" onchange="this.form.submit()" name="deleteItemId" value="<%= task.id %>">
                   </form>
     
-                  <p>
+                  <p id="taskName<%= task.id %>">
                     <%= task.task %>
                   </p>
     
-                  <form action="/edit" method="post">
-                    <input type="hidden" name="updatedId">
-                    <input type="text" name="updateText" autofocus="true" hidden="true">
+                  <form class="editInput" action="/edit" method="post">
+                    <input  type="hidden" name="updatedId" value="<%= task.id %>">
+                    <!-- <input type="hidden" name="memberId" value="<%= currentMemberId %>"> -->
+                    <input class="updateInput" id="input<%= task.id %>" type="text" name="updateText" value="<%= task.task %>" hidden="true">
+                    <button id="done<%= task.id %>" type="submit" class="editBtn" hidden>✔️</button>
                   </form>
-                  <button>✏️</button>
+
+                  <button id="button<%= task.id %>" onclick="handler('<%= task.id %>')" class="editBtn">🖊️</button>
+                  <!-- <button class="editBtn">🖊️</button> -->
               </div>
-              <% } %>
+              <% }) %>
+              
               <form class="form2" action="/addTask" method="post">
+                <!-- <input type="hidden" name="memberId" value="<%= currentMemberId %>"> -->
                 <input type="text" name="taskName" placeholder="New task" autofocus="true" required>
-                <button type="submit" class="add" value=<%= listName %>>+</button>
+                <button type="submit" class="add" value="<%= listName %>">+</button>
                 <!-- <button type="submit">submit</button> -->
              </form>
-              
+            
             </div>
             
         </div>
         </main>
+        <script>
+          function handler(id){
+            document.getElementById("taskName" + id).setAttribute("hidden", true)
+            document.getElementById("input" + id).removeAttribute("hidden")
+            document.getElementById("done" + id).removeAttribute("hidden");
+            document.getElementById("button" + id).setAttribute("hidden", true);
+          }
+
+        </script>
+
       </body>
 
 </html>
