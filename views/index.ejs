@@ -19,10 +19,10 @@
             <form class="form1" action="/family" method="post">
               <% familyMembers.forEach(function(member) {%>
               <!-- <input type="submit" name="memberId" for="<%= member.id %>"  value="<%= member.name %>" id="<%= member.id %>"> -->
-              <input type="submit" name="memberId"  value="<%= member.name %>" id="<%= member.id %>">
+              <input class="fam" type="submit" name="memberId"  value="<%= member.name %>" id="<%= member.id %>" contenteditable="true">
               <!-- <label for="<%= member.id %>"><%= member.name %></label> -->
               <% }) %>
-              <input type="submit" name="add" formaction="/family" value="Add Family member" id="tab">
+              <input class="fam" type="submit" name="add" formaction="/family" value="Add Family member" id="tab">
             </form>
             <!-- <button type="submit"><h3>My ToDo List</h3></button> -->
             

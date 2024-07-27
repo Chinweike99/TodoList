@@ -19,13 +19,11 @@ db.connect();
 
 let currentMember = 1;
 
-// app.get('/', (req, res) =>{
-//     res.render('index.ejs',{
-//         listName: "Today",
-//         listTask: tasks,
-//         familyMembers: familyMembers
-//     })
-// });
+async function getMember(){
+    const family = await db.query("SELECT * FROM family");
+    const members =  family.rows;
+    return members.find((member) => member.id == currentMember);
+}
 
 app.get('/', async (req, res)=>{
     try{
@@ -34,16 +32,11 @@ app.get('/', async (req, res)=>{
 
         const familResult = await db.query("SELECT * FROM family;");
         const familyMembers = familResult.rows;
-        // const familyMembers = await db.query("SELECT * FROM family");
-        // let tasks = [];
-        // if (req.query.memberId) {
-        //     const taskResult = await db.query("SELECT * FROM tasks WHERE member_id = $1", [req.query.memberId]);
-        //     tasks = taskResult.rows;
-        // }
 
+        const currentList = await getMember();
         res.render("index.ejs", {
-            listName: "TODAY",
-            // tasks: tasks,
+            listName: "TO DO LIST",
+            currentList: currentList,
             listTask: tasks,
             familyMembers: familyMembers,
             currentMemberId: req.query.memberId || null
@@ -120,7 +113,6 @@ app.post("/edit", async (req, res) => {
 });
 
 app.post("/delete", async(req, res) => {
-    // const id = req.body.deleteItemId;
     const { deleteItemId, memberId } = req.body;
     try {
         await db.query("DELETE FROM tasks WHERE id = $1", [deleteItemId]);
